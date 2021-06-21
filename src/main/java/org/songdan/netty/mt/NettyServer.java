@@ -32,7 +32,8 @@ public class NettyServer {
 //                                System.out.println(msg);
 //                            }
 //                        });
-                        ch.pipeline().addLast(new FirstServerChannelHandler());
+//                        ch.pipeline().addLast(new FirstServerChannelHandler());
+                        ch.pipeline().addLast(new ServerHandler());
                     }
                 })
                 .bind(8000);

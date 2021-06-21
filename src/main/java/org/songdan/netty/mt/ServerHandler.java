@@ -18,12 +18,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         // 解码
         Packet packet = PacketCodeC.INSTANCE.decode(requestByteBuf);
-        LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
-        loginResponsePacket.setVersion(packet.getVersion());
         // 判断是否是登录请求数据包
         if (packet instanceof LoginRequestPacket) {
+            LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
+            loginResponsePacket.setVersion(packet.getVersion());
             LoginRequestPacket loginRequestPacket = (LoginRequestPacket) packet;
-
             // 登录校验
             if (valid(loginRequestPacket)) {
                 // 校验成功
@@ -34,9 +33,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 System.out.println(new Date() + ":" + loginRequestPacket.getUserId() + "登陆失败");
                 loginResponsePacket.setSuccess(false);
             }
+            ByteBuf responseByateBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), loginResponsePacket);
+            ctx.channel().writeAndFlush(responseByateBuf);
+        } else if(packet instanceof MessageRequestPacket) {
+            MessageRequestPacket messageRequestPacket = ((MessageRequestPacket) packet);
+            System.out.println(new Date() + ": 收到客户端消息: " + messageRequestPacket.getMessage());
+
+            MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
+            messageResponsePacket.setMessage("服务端回复【" + messageRequestPacket.getMessage() + "】");
+            ByteBuf responseByteBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), messageResponsePacket);
+            ctx.channel().writeAndFlush(responseByteBuf);
         }
-        ByteBuf responseByateBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), loginResponsePacket);
-        ctx.channel().writeAndFlush(responseByateBuf);
     }
 
     private boolean valid(LoginRequestPacket loginRequestPacket) {

@@ -70,6 +70,15 @@ public class PacketCodeC {
         if (Command.LOGIN_REQUEST == command) {
             return LoginRequestPacket.class;
         }
+        if (Command.LOGIN_RESPONSE == command) {
+            return LoginResponsePacket.class;
+        }
+        if (Command.MESSAGE_REQUEST == command) {
+            return MessageRequestPacket.class;
+        }
+        if (Command.MESSAGE_RESPONSE == command) {
+            return MessageResponsePacket.class;
+        }
         return null;
     }
 
